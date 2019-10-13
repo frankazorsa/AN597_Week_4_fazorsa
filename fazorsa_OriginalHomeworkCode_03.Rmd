@@ -1,0 +1,162 @@
+---
+title: "fazorsa_OriginalHomeworkCode_03"
+author: "Frank Azorsa"
+date: "10/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+***
+###Homework 3
+>Load in the dataset “zombies.csv” from my GitHub repo at https://github.com/fuzzyatelin/fuzzyatelin.github.io/tree/master/AN597_Fall19/. This data includes the first and last name and gender of the entire population of 1000 people who have survived the zombie apocalypse and are now ekeing out an existence somewhere on the East Coast, along with several other variables (height, weight, age, number of years of education, number of zombies they have killed, and college major see here for info on important post-zombie apocalypse majors
+***
+
+```{r}
+#Loading the dataset “zombies.csv”
+library(curl)
+f <- f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall19/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+***
+###First question.
+>Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education). NOTE: You will not want to use the built in var() and sd() commands as these are for samples.
+***
+
+```{r}
+summary(d)
+attach(d)
+mean(height)
+Height_sigma<- sqrt(sum((height - mean(height))^2)/length(height))
+Height_sigma
+
+mean(weight)
+weight_sigma<- sqrt(sum((weight - mean(weight))^2)/length(weight))
+weight_sigma
+
+mean(age)
+age_sigma<- sqrt(sum((age - mean(age))^2)/length(age))
+age_sigma
+
+mean(zombies_killed)
+zombiesKilled_sigma<- sqrt(sum((zombies_killed - mean(zombies_killed))^2)/length(zombies_killed))
+zombiesKilled_sigma
+
+mean(years_of_education)
+yearsofedu_sigma<- sqrt(sum((years_of_education - mean(years_of_education))^2)/length(years_of_education))
+yearsofedu_sigma
+```
+
+***
+###Second question.
+>Use {ggplot} to make boxplots of each of these variables by gender.
+***
+```{r}
+library(ggplot2)
+#Height by Gender
+boxplot(height ~ gender, main="Boxplot of Height by gender", ylab = "Height (inches)", names=c("Females", "Males"))
+
+#Weight by Gender
+boxplot(weight ~ gender, main="Boxplot of Weight by Gender", ylab = "Weight (lbs)", names=c("Females", "Males"))
+
+#Age by Gender
+boxplot(age ~ gender, main="Boxplot of Age by Gender", ylab = "Age", names=c("Females", "Males"))
+
+#Number of Zombies Killed  by Gender
+boxplot(zombies_killed ~ gender,main="Boxplot of Zombies Killed by Gender", ylab = "Zombies Killed", names=c("Females", "Males"))
+
+#Number of Years of Education  by Gender
+boxplot(years_of_education ~ gender,main="Boxplot of Years of Education by Gender", ylab = "Years of Education", names=c("Females", "Males"))
+```
+
+***
+###Third question.
+>Use {ggplot} to make scatterplots of height and weight in relation to age. Do these variables seem to be related? In what way?
+***
+```{r}
+library(ggplot2)
+attach(d)
+data("d")
+str(d)
+ggplot() + geom_point(data = d, aes(x = age, y = height, color = gender))
+
+plot(age, height, main = "Scatterplot Age and Height", xlab = "Age", ylab = "height")
+
+plot(x= log(age), y= log(height))
+
+
+ggplot() + geom_point(data = d, aes(x = age, y = weight, color = gender))
+
+plot(age, weight, main = "Scatterplot Age and Weight", xlab = "Age", ylab = "weight")
+
+plot(x= log(age), y= log(weight))
+```
+
+***
+###Fourth question.
+>Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
+***
+```{r}
+qqnorm(height, pch = 1, frame = FALSE, main="Normal QQ plot height") #qq-plot: This function help us to observe a good fit of the straight line (qqnorm, qqline)
+qqline(height,col="steelblue", lwd = 2)
+hist(height)
+
+qqnorm(weight, pch = 1, frame = FALSE, main="Normal QQ plot weight")
+qqline(weight,col="steelblue", lwd = 2)
+hist(weight)
+
+qqnorm(age, pch = 1, frame = FALSE, main="Normal QQ plot age")
+qqline(weight,col="steelblue", lwd = 2)
+hist(age)
+
+qqnorm(zombies_killed, pch = 1, frame = FALSE, main="Normal QQ plot zombies killed")
+qqline(zombies_killed,col="steelblue", lwd = 2)
+hist(zombies_killed)
+
+qqnorm(years_of_education, pch = 1, frame = FALSE, main="Normal QQ plot years of education")
+qqline(years_of_education,col="steelblue", lwd = 2)
+hist(years_of_education)
+```
+
+***
+###Fifth question.
+>Now use the sample() function to sample ONE subset of 30 zombie survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable, and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you may need to base your estimate of the CIs on slightly different code than for the normal…
+***
+
+```{r}
+he<- sample(height, 30, replace = FALSE, prob = NULL)
+hist(height)
+boxplot(height)
+t.test(height, mu=67, alt="two.sided", conf=0.95)
+
+mean(he) #he=sample(height, 30, replace = FALSE, prob = NULL)
+sd(he)
+
+wei<- sample(weight, 30, replace = FALSE, prob = NULL)
+hist(weight)
+boxplot(weight)
+t.test(height, mu=140, alt="two.sided", conf=0.95)
+
+mean(wei)
+sd(wei)
+
+ag<- sample(age, 30, replace = FALSE, prob = NULL)
+hist(age)
+boxplot(age)
+t.test(height, mu=20, alt="two.sided", conf=0.95)
+
+mean(ag)
+sd(ag)
+```
+***
+###Six question.
+>Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples. Together with the first sample you drew, you now have a set of 100 means for each he (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of this distribution of means for each variable? How do the standard deviations of means compare to the standard errors estimated in [5]? What do these sampling distributions look like (a graph might help here)? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+***
+```{r}
+
+```
+
+Challenges: I could not figure out how to solve question 6 and I could not share the homework for peer commentary because I was still working on it. I will try to continue working on question 6 and upload a revised version later tonight.
